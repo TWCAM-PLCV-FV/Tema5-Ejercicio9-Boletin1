@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<title>Ejercicio 9</title>
+	<script src="https://d3js.org/d3.v5.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/d3-color@3"></script>
+	<script src="https://cdn.jsdelivr.net/npm/d3-interpolate@3"></script>
+	<script src="https://cdn.jsdelivr.net/npm/d3-scale-chromatic@3"></script>
+	<style type="text/css">
+	</style>
+</head>
+
+<body>
+	<script type="text/javascript">
+		//PIE LAYOUT: A partir de un conjunto de datos que representan un porcentaje sobre el total
+		//este layout calcula el ángulo inicial y final de cada porción del pastel,
+		//también los radios interior y exterior para el caso de tener dos círculos concéntricos
+		//Width and height
+		var w = 300;
+		var h = 300;
+		var m = 40;
+		var dataset = [5, 10, 20, 45, 6, 25]; //Conjunto de datos
+
+		//Definimos un "pie layout" por defecto. Esto nos crea un array de objetos con
+		//elementos que contienen: data,index, startAngle, endAngle y value
+		var pie = d3.pie()
+			.startAngle(-0.5 * Math.PI)
+			.endAngle(0.5 * Math.PI);
+
+		//Ahora dibujaremos objetos tipo "path" con SVG.
+		// Ejemplo de path: <path d="M10 10 H 90 V 90 H 10 L 10 10"/>
+		//Para ello tenemos la función d3.arc() https://github.com/d3/d3/blob/master/API.md#shapes-d3-shape
+		//que a partir de los párametros introducidos (radios, etc) genera una lista de
+		// puntos con la forma geométrica
+		var outerRadius = w / 2;
+		var innerRadius = 100;
+		var arc = d3.arc()
+			.innerRadius(innerRadius)
+			.outerRadius(outerRadius);
+
+		//Creamos un esquema de colores
+		var color = d3.scaleOrdinal(d3.schemeDark2);
+		//Creamos el elemento SVG
+		var svg = d3.select("body")
+			.append("svg")
+			.attr("width", w)
+			.attr("height", h);
+		//Creamos en svg un grupo "g"
+		var arcs = svg.selectAll("g.arc")
+			.data(pie(dataset))
+			.enter()
+			.append("g")
+			.attr("class", "arc")
+			.attr("transform", "translate(" + outerRadius + "," +
+				outerRadius + ")")
+			.attr("stroke", "black")
+			.style("stroke-width", "1px");
+
+		//Dibujamos paths con la lista de puntos generada previamente en "arc" y los colores del array
+		arcs.append("path")
+			.attr("fill", function (d, i) {
+				return color(i);
+			})
+			.attr("d", arc);
+
+		//Añadimos etiquetas de texto en la posición central del path
+		arcs.append("text")
+			.attr("transform", function (d) {
+				return "translate(" + arc.centroid(d) + ")";
+			})
+			.attr("text-anchor", "middle")
+			.text(function (d) {
+				return d.value;
+			});
+	</script>
+</body>
+
+</html>
