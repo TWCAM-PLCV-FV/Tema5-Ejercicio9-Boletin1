@@ -20,14 +20,22 @@
 		//Width and height
 		var w = 300;
 		var h = 300;
-		var m = 40;
-		var dataset = [5, 10, 20, 45, 6, 25]; //Conjunto de datos
+		var r = 100;
+		var dataset = [
+			{"label":"Si:", "value":50}, 
+            {"label":"No:", "value":25}, 
+            {"label":"Blanco:", "value":13},
+			{"label":"Nulo:", "value":12}
+		]; //Conjunto de datos
 
 		//Definimos un "pie layout" por defecto. Esto nos crea un array de objetos con
 		//elementos que contienen: data,index, startAngle, endAngle y value
 		var pie = d3.pie()
 			.startAngle(-0.5 * Math.PI)
-			.endAngle(0.5 * Math.PI);
+			.endAngle(0.5 * Math.PI)
+			.value(function(d){
+				return d.value;
+			});
 
 		//Ahora dibujaremos objetos tipo "path" con SVG.
 		// Ejemplo de path: <path d="M10 10 H 90 V 90 H 10 L 10 10"/>
@@ -35,7 +43,7 @@
 		//que a partir de los párametros introducidos (radios, etc) genera una lista de
 		// puntos con la forma geométrica
 		var outerRadius = w / 2;
-		var innerRadius = 100;
+		var innerRadius = 80;
 		var arc = d3.arc()
 			.innerRadius(innerRadius)
 			.outerRadius(outerRadius);
@@ -68,12 +76,12 @@
 		//Añadimos etiquetas de texto en la posición central del path
 		arcs.append("text")
 			.attr("transform", function (d) {
+				d.innerRadius = 0;
+                d.outerRadius = r;
 				return "translate(" + arc.centroid(d) + ")";
 			})
 			.attr("text-anchor", "middle")
-			.text(function (d) {
-				return d.value;
-			});
+			.text(function(d, i) { return dataset[i].label+dataset[i].value; });
 	</script>
 </body>
 
